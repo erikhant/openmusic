@@ -1,0 +1,38 @@
+{
+  "name": "openmusic",
+  "version": "1.0.0",
+  "description": "Album &amp; Songs APIs with Nodejs, Hapi Framework, PostgreSQL",
+  "main": "index.js",
+  "scripts": {
+    "prod": "NODE_ENV=production node ./src/server.js",
+    "dev": "nodemon ./src/server.js",
+    "lint": "eslint --fix ./src",
+    "migrate": "node-pg-migrate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erikhant/openmusic.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.24.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.3.0",
+    "eslint-plugin-promise": "^6.0.1"
+  },
+  "dependencies": {
+    "@hapi/hapi": "^20.1.0",
+    "dotenv": "^16.0.2",
+    "joi": "^17.6.1",
+    "nanoid": "^3.1.20",
+    "node-pg-migrate": "^6.2.2",
+    "pg": "^8.8.0"
+  },
+  "bugs": {
+    "url": "https://github.com/erikhant/openmusic/issues"
+  },
+  "homepage": "https://github.com/erikhant/openmusic#readme"
+}
