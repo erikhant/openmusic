@@ -27,8 +27,8 @@ class Songs {
 
   async getAll () {
     const result = await this._pool.query(`SELECT * FROM ${this.#name}`)
-    console.log(result)
-    return result.rows
+
+    return result.rows.map(song => ({ id: song.id, title: song.title, performer: song.performer }))
   }
 
   async getById (id) {
@@ -42,13 +42,17 @@ class Songs {
       throw new NotFoundError({ entityName: 'song', fieldName: 'id', request: id })
     }
 
-    return result.rows[0]
+    return result.rows.map(song => {
+      const mapSong = { ...song, albumId: song.album_id }
+      delete mapSong.album_id
+      return mapSong
+    })[0]
   }
 
-  async update (id, { title, year, genre, performer, duration = null, albumId }) {
+  async update (id, { title, year, genre, performer, duration = null, albumId = null }) {
     const query = {
-      text: `UPDATE ${this.#name} SET title = $1, year = $2 genre = $3, performer = $4, duration = $5, albumId = $6 WHERE id = $7 RETURNING id`,
-      values: [title, year, genre, performer, duration !== null ? duration : 'NULL', albumId !== null ? albumId : 'NULL', id]
+      text: `UPDATE ${this.#name} SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, album_id = $6 WHERE id = $7 RETURNING id`,
+      values: [title, year, genre, performer, duration, albumId, id]
     }
 
     const result = await this._pool.query(query)
