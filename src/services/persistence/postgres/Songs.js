@@ -19,7 +19,7 @@ class Songs {
     const result = await this._pool.query(query)
 
     if (!result.rows[0].id) {
-      return new InvariantError('Failed to add new song')
+      return new InvariantError(`Failed to add new ${this.#name}`)
     }
 
     return result.rows[0].id
