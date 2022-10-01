@@ -1,15 +1,13 @@
 const Hapi = require('@hapi/hapi')
 const songs = require('./webapi/songs')
 const PostgresDbContext = require('./services/persistence')
-const { ClientError, AlreadyExistsError } = require('./common/exceptions')
+const ClientError = require('./common/exceptions/ClientError')
 const songValidator = require('./validator/song')
-const albumValidator = require('./validator/album')
+// const albumValidator = require('./validator/album')
 
 require('dotenv').config()
 
 const init = async () => {
-//   const notesService = new NotesService();
-
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
@@ -27,20 +25,14 @@ const init = async () => {
         persistence: new PostgresDbContext(),
         validator: songValidator
       }
-    },
-    {
-      plugin: albums,
-      options: {
-        persistence: new PostgresDbContext(),
-        validator: albumValidator
-      }
     }
   ])
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request
+    console.log(response)
     if (response instanceof Error) {
-      if (response instanceof ClientError || response instanceof AlreadyExistsError) {
+      if (response instanceof ClientError) {
         const newResponse = h.response({
           status: 'fail',
           message: response.message

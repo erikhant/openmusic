@@ -4,7 +4,7 @@ const { nanoid } = require('nanoid')
 const { InvariantError, NotFoundError } = require('../../../common/exceptions')
 
 class Songs {
-  #name = 'song'
+  #name = 'songs'
   constructor () {
     this._pool = new Pool()
   }
@@ -14,7 +14,7 @@ class Songs {
 
     const query = {
       text: `INSERT INTO ${this.#name} VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-      values: [id, title, year, genre, performer, duration !== null ? duration : 'NULL', albumId !== null ? albumId : 'NULL']
+      values: [id, title, year, genre, performer, duration, albumId]
     }
     const result = await this._pool.query(query)
 
@@ -27,6 +27,7 @@ class Songs {
 
   async getAll () {
     const result = await this._pool.query(`SELECT * FROM ${this.#name}`)
+    console.log(result)
     return result.rows
   }
 

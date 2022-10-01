@@ -4,7 +4,7 @@ const { nanoid } = require('nanoid')
 const { InvariantError, NotFoundError } = require('../../../common/exceptions')
 
 class Albums {
-  #name = 'album'
+  #name = 'albums'
   constructor () {
     this._pool = new Pool()
   }

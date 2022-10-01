@@ -6,8 +6,8 @@ class SongHandler {
     this.postSong = this.postSong.bind(this)
     this.getSongs = this.getSongs.bind(this)
     this.getSongById = this.getSongById.bind(this)
-    this.putSong = this.putSong.bind(this)
-    this.deleteSong = this.deleteSong.bind(this)
+    this.putSongById = this.putSongById.bind(this)
+    this.deleteSongById = this.deleteSongById.bind(this)
   }
 
   async postSong (request, h) {
