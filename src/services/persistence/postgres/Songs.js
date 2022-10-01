@@ -9,12 +9,12 @@ class Songs {
     this._pool = new Pool()
   }
 
-  async add ({ title, year, genre, performer, duration = null, albumId }) {
+  async add ({ title, year, genre, performer, duration = null, albumId = null }) {
     const id = nanoid(16)
 
     const query = {
       text: `INSERT INTO ${this.#name} VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-      values: [id, title, year, genre, performer, duration !== null ? duration : 'NULL', albumId]
+      values: [id, title, year, genre, performer, duration !== null ? duration : 'NULL', albumId !== null ? albumId : 'NULL']
     }
     const result = await this._pool.query(query)
 
@@ -47,7 +47,7 @@ class Songs {
   async update (id, { title, year, genre, performer, duration = null, albumId }) {
     const query = {
       text: `UPDATE ${this.#name} SET title = $1, year = $2 genre = $3, performer = $4, duration = $5, albumId = $6 WHERE id = $7 RETURNING id`,
-      values: [title, year, genre, performer, duration !== null ? duration : 'NULL', albumId, id]
+      values: [title, year, genre, performer, duration !== null ? duration : 'NULL', albumId !== null ? albumId : 'NULL', id]
     }
 
     const result = await this._pool.query(query)
