@@ -1,6 +1,6 @@
 const { Pool } = require('pg')
 const { nanoid } = require('nanoid')
-const { mapDBToModel } = require('../../../common/utils')
+// const { mapDBToModel } = require('../../../common/utils')
 const { InvariantError, NotFoundError } = require('../../../common/exceptions')
 
 class Songs {
@@ -27,7 +27,7 @@ class Songs {
 
   async getAll () {
     const result = await this._pool.query(`SELECT * FROM ${this.#name}`)
-    return result.rows.map(mapDBToModel)
+    return result.rows
   }
 
   async getById (id) {
@@ -41,7 +41,7 @@ class Songs {
       throw new NotFoundError({ entityName: 'song', fieldName: 'id', request: id })
     }
 
-    return result.rows.map(mapDBToModel)[0]
+    return result.rows[0]
   }
 
   async update (id, { title, year, genre, performer, duration = null, albumId }) {
