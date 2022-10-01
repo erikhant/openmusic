@@ -1,5 +1,9 @@
 const Hapi = require('@hapi/hapi')
+const songs = require('./webapi/songs')
+const PostgresDbContext = require('./services/persistence')
 const { ClientError, AlreadyExistsError } = require('./common/exceptions')
+const songValidator = require('./validator/song')
+const albumValidator = require('./validator/album')
 
 require('dotenv').config()
 
@@ -16,13 +20,22 @@ const init = async () => {
     }
   })
 
-  // await server.register({
-  //   plugin: notes,
-  //   options: {
-  //     service: notesService,
-  //     validator: NotesValidator
-  //   }
-  // })
+  await server.register([
+    {
+      plugin: songs,
+      options: {
+        persistence: new PostgresDbContext(),
+        validator: songValidator
+      }
+    },
+    {
+      plugin: albums,
+      options: {
+        persistence: new PostgresDbContext(),
+        validator: albumValidator
+      }
+    }
+  ])
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request
