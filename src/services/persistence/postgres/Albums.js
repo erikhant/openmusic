@@ -61,7 +61,7 @@ class Albums {
 
     const result = await this._pool.query(query)
 
-    if (!result.rows.length) {
+    if (result.rowCount === 0) {
       throw new NotFoundError({ entityName: 'album', fieldName: 'id', request: id })
     }
   }
@@ -74,7 +74,7 @@ class Albums {
 
     const result = await this._pool.query(query)
 
-    if (!result.rows.length) {
+    if (result.rowCount === 0) {
       throw new NotFoundError({ entityName: 'album', fieldName: 'id', request: id })
     }
   }
