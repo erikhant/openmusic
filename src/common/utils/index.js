@@ -1,3 +1,1 @@
-module.exports = {
-  mapDbToModel: require('./mapDBToModel')
-}
+module.exports = {}
