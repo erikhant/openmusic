@@ -1,8 +1,8 @@
 const Hapi = require('@hapi/hapi')
 const songs = require('./webapi/songs')
 const albums = require('./webapi/albums')
-const PostgresDbPersistence = require('./services/persistence')
 const ClientError = require('./common/exceptions/ClientError')
+const PostgresDbPersistence = require('./services/persistence')
 const { albumValidator, songValidator } = require('./validator')
 
 require('dotenv').config()
@@ -37,7 +37,7 @@ const init = async () => {
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request
-    // console.log(response)
+
     if (response instanceof Error) {
       if (response instanceof ClientError) {
         const newResponse = h.response({
