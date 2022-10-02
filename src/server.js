@@ -1,9 +1,9 @@
 const Hapi = require('@hapi/hapi')
 const songs = require('./webapi/songs')
-const PostgresDbContext = require('./services/persistence')
+const albums = require('./webapi/albums')
+const PostgresDbPersistence = require('./services/persistence')
 const ClientError = require('./common/exceptions/ClientError')
-const songValidator = require('./validator/song')
-// const albumValidator = require('./validator/album')
+const { albumValidator, songValidator } = require('./validator')
 
 require('dotenv').config()
 
@@ -22,8 +22,15 @@ const init = async () => {
     {
       plugin: songs,
       options: {
-        persistence: new PostgresDbContext(),
+        persistence: new PostgresDbPersistence(),
         validator: songValidator
+      }
+    },
+    {
+      plugin: albums,
+      options: {
+        persistence: new PostgresDbPersistence(),
+        validator: albumValidator
       }
     }
   ])
