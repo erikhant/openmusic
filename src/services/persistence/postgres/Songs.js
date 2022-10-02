@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const { Pool } = require('pg')
 const { nanoid } = require('nanoid')
 const { InvariantError, NotFoundError } = require('../../../common/exceptions')
@@ -17,15 +18,25 @@ class Songs {
     }
     const result = await this._pool.query(query)
 
-    if (!result.rows[0].id) {
+    if (result.rowCount === 0) {
       return new InvariantError(`Failed to add new ${this.#name}`)
     }
 
     return result.rows[0].id
   }
 
-  async getAll () {
-    const result = await this._pool.query(`SELECT * FROM ${this.#name}`)
+  async getAll ({ title = null, performer = null }) {
+    let query = `SELECT * FROM ${this.#name}`
+
+    if (title && performer) {
+      query += ` WHERE title ILIKE '%${title}%' AND performer ILIKE '%${performer}%'`
+    } else if (title) {
+      query += ` WHERE title ILIKE '%${title}%'`
+    } else if (performer) {
+      query += ` WHERE performer ILIKE '%${performer}%'`
+    }
+
+    const result = await this._pool.query(query)
 
     return result.rows.map(song => ({ id: song.id, title: song.title, performer: song.performer }))
   }
@@ -37,7 +48,7 @@ class Songs {
     }
     const result = await this._pool.query(query)
 
-    if (!result.rows.length) {
+    if (result.rowCount === 0) {
       throw new NotFoundError({ entityName: 'song', fieldName: 'id', request: id })
     }
 
@@ -56,7 +67,7 @@ class Songs {
 
     const result = await this._pool.query(query)
 
-    if (!result.rows.length) {
+    if (result.rowCount === 0) {
       throw new NotFoundError({ entityName: 'song', fieldName: 'id', request: id })
     }
   }
@@ -69,7 +80,7 @@ class Songs {
 
     const result = await this._pool.query(query)
 
-    if (!result.rows.length) {
+    if (result.rowCount === 0) {
       throw new NotFoundError({ entityName: 'song', fieldName: 'id', request: id })
     }
   }
