@@ -4,6 +4,7 @@ const { InvariantError, NotFoundError } = require('../../../common/exceptions')
 
 class Albums {
   #name = 'albums'
+  #relation = 'songs'
   constructor () {
     this._pool = new Pool()
   }
@@ -30,17 +31,26 @@ class Albums {
   }
 
   async getById (id) {
-    const query = {
+    const queryAlbum = {
       text: `SELECT * FROM ${this.#name} WHERE id = $1`,
       values: [id]
     }
-    const result = await this._pool.query(query)
+    const album = await this._pool.query(queryAlbum)
 
-    if (!result.rows.length) {
+    if (album.rowCount === 0) {
       throw new NotFoundError({ entityName: 'album', fieldName: 'id', request: id })
     }
 
-    return result.rows[0]
+    const querySongs = {
+      text: `SELECT * FROM ${this.#relation} WHERE album_id = $1`,
+      values: [id]
+    }
+    const songs = await this._pool.query(querySongs)
+
+    const result = {
+      ...album.rows[0], songs: songs.rows
+    }
+    return result
   }
 
   async update (id, { name, year }) {
