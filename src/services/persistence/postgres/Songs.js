@@ -10,7 +10,7 @@ class Songs {
   }
 
   async add ({ title, year, genre, performer, duration = null, albumId = null }) {
-    const id = nanoid(16)
+    const id = `${this.#name}-${nanoid(16)}`
 
     const query = {
       text: `INSERT INTO ${this.#name} VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
@@ -18,22 +18,17 @@ class Songs {
     }
     const result = await this._pool.query(query)
 
-    if (result.rowCount === 0) {
+    if (!result.rowCount) {
       return new InvariantError(`Failed to add new ${this.#name}`)
     }
 
     return result.rows[0].id
   }
 
-  async getAll ({ title = null, performer = null }) {
-    let query = `SELECT * FROM ${this.#name}`
-
-    if (title && performer) {
-      query += ` WHERE title ILIKE '%${title}%' AND performer ILIKE '%${performer}%'`
-    } else if (title) {
-      query += ` WHERE title ILIKE '%${title}%'`
-    } else if (performer) {
-      query += ` WHERE performer ILIKE '%${performer}%'`
+  async getAll ({ title = '', performer = '' }) {
+    const query = {
+      text: 'SELECT id, title, performer FROM songs WHERE title ILIKE $1 AND performer ILIKE $2',
+      values: [`%${title}%`, `%${performer}%`]
     }
 
     const result = await this._pool.query(query)
@@ -48,7 +43,7 @@ class Songs {
     }
     const result = await this._pool.query(query)
 
-    if (result.rowCount === 0) {
+    if (!result.rowCount) {
       throw new NotFoundError({ entityName: 'song', fieldName: 'id', request: id })
     }
 
@@ -67,7 +62,7 @@ class Songs {
 
     const result = await this._pool.query(query)
 
-    if (result.rowCount === 0) {
+    if (!result.rowCount) {
       throw new NotFoundError({ entityName: 'song', fieldName: 'id', request: id })
     }
   }
@@ -80,7 +75,7 @@ class Songs {
 
     const result = await this._pool.query(query)
 
-    if (result.rowCount === 0) {
+    if (!result.rowCount) {
       throw new NotFoundError({ entityName: 'song', fieldName: 'id', request: id })
     }
   }

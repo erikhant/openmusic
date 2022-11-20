@@ -2,10 +2,12 @@ const Hapi = require('@hapi/hapi')
 const songs = require('./webapi/songs')
 const albums = require('./webapi/albums')
 const ClientError = require('./common/exceptions/ClientError')
-const PostgresDbPersistence = require('./services/persistence')
+const PostgresServices = require('./services/persistence')
 const { albumValidator, songValidator } = require('./validator')
 
 require('dotenv').config()
+
+const services = new PostgresServices()
 
 const init = async () => {
   const server = Hapi.server({
@@ -22,14 +24,14 @@ const init = async () => {
     {
       plugin: songs,
       options: {
-        persistence: new PostgresDbPersistence(),
+        service: services.songs,
         validator: songValidator
       }
     },
     {
       plugin: albums,
       options: {
-        persistence: new PostgresDbPersistence(),
+        service: services.albums,
         validator: albumValidator
       }
     }

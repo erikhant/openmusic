@@ -1,6 +1,6 @@
 class AlbumHandler {
-  constructor (DbContext, validator) {
-    this._context = DbContext
+  constructor (service, validator) {
+    this._context = service
     this._validator = validator
 
     this.postAlbum = this.postAlbum.bind(this)
@@ -12,7 +12,7 @@ class AlbumHandler {
   async postAlbum (request, h) {
     this._validator.validate(request.payload)
 
-    const albumId = await this._context.albums.add(request.payload)
+    const albumId = await this._context.add(request.payload)
 
     const response = h.response({
       status: 'success',
@@ -25,7 +25,7 @@ class AlbumHandler {
 
   async getAlbumById (request, h) {
     const { id } = request.params
-    const album = await this._context.albums.getById(id)
+    const album = await this._context.getById(id)
 
     return {
       status: 'success',
@@ -39,7 +39,7 @@ class AlbumHandler {
     this._validator.validate(request.payload)
 
     const { id } = request.params
-    await this._context.albums.update(id, request.payload)
+    await this._context.update(id, request.payload)
 
     return {
       status: 'success',
@@ -49,7 +49,7 @@ class AlbumHandler {
 
   async deleteAlbumById (request, h) {
     const { id } = request.params
-    await this._context.albums.delete(id)
+    await this._context.delete(id)
 
     return {
       status: 'success',

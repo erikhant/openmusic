@@ -10,7 +10,7 @@ class Albums {
   }
 
   async add ({ name, year }) {
-    const id = nanoid(16)
+    const id = `${this.#name}-${nanoid(16)}`
 
     const query = {
       text: `INSERT INTO ${this.#name} VALUES($1, $2, $3) RETURNING id`,
@@ -37,7 +37,7 @@ class Albums {
     }
     const album = await this._pool.query(queryAlbum)
 
-    if (album.rowCount === 0) {
+    if (!album.rowCount) {
       throw new NotFoundError({ entityName: 'album', fieldName: 'id', request: id })
     }
 
@@ -61,7 +61,7 @@ class Albums {
 
     const result = await this._pool.query(query)
 
-    if (result.rowCount === 0) {
+    if (!result.rowCount) {
       throw new NotFoundError({ entityName: 'album', fieldName: 'id', request: id })
     }
   }
@@ -74,7 +74,7 @@ class Albums {
 
     const result = await this._pool.query(query)
 
-    if (result.rowCount === 0) {
+    if (!result.rowCount) {
       throw new NotFoundError({ entityName: 'album', fieldName: 'id', request: id })
     }
   }

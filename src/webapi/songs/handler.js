@@ -1,6 +1,6 @@
 class SongHandler {
-  constructor (DbContext, validator) {
-    this._context = DbContext
+  constructor (service, validator) {
+    this._context = service
     this._validator = validator
 
     this.postSong = this.postSong.bind(this)
@@ -13,7 +13,7 @@ class SongHandler {
   async postSong (request, h) {
     this._validator.validate(request.payload)
 
-    const songId = await this._context.songs.add(request.payload)
+    const songId = await this._context.add(request.payload)
 
     const response = h.response({
       status: 'success',
@@ -25,7 +25,7 @@ class SongHandler {
   }
 
   async getSongs (request) {
-    const songs = await this._context.songs.getAll(request.query)
+    const songs = await this._context.getAll(request.query)
 
     return {
       status: 'success',
@@ -37,7 +37,7 @@ class SongHandler {
 
   async getSongById (request, h) {
     const { id } = request.params
-    const song = await this._context.songs.getById(id)
+    const song = await this._context.getById(id)
 
     return {
       status: 'success',
@@ -51,7 +51,7 @@ class SongHandler {
     this._validator.validate(request.payload)
 
     const { id } = request.params
-    await this._context.songs.update(id, request.payload)
+    await this._context.update(id, request.payload)
 
     return {
       status: 'success',
@@ -61,7 +61,7 @@ class SongHandler {
 
   async deleteSongById (request, h) {
     const { id } = request.params
-    await this._context.songs.delete(id)
+    await this._context.delete(id)
 
     return {
       status: 'success',
