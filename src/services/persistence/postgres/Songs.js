@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const { Pool } = require('pg')
 const { nanoid } = require('nanoid')
 const { InvariantError, NotFoundError } = require('../../../common/exceptions')
@@ -19,7 +18,7 @@ class Songs {
     const result = await this._pool.query(query)
 
     if (!result.rowCount) {
-      return new InvariantError(`Failed to add new ${this.#name}`)
+      return new InvariantError('An error occurred while saving data')
     }
 
     return result.rows[0].id
@@ -73,6 +72,18 @@ class Songs {
       values: [id]
     }
 
+    const result = await this._pool.query(query)
+
+    if (!result.rowCount) {
+      throw new NotFoundError({ entityName: 'song', fieldName: 'id', request: id })
+    }
+  }
+
+  async any (id) {
+    const query = {
+      text: `SELECT * FROM ${this.#name} WHERE id = $1`,
+      values: [id]
+    }
     const result = await this._pool.query(query)
 
     if (!result.rowCount) {

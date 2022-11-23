@@ -1,9 +1,28 @@
 const Hapi = require('@hapi/hapi')
+const Jwt = require('@hapi/jwt')
+
+const { ClientError } = require('./common/exceptions')
+
 const songs = require('./webapi/songs')
 const albums = require('./webapi/albums')
-const ClientError = require('./common/exceptions/ClientError')
+const users = require('./webapi/users')
+const authentications = require('./webapi/authentications')
+const playlists = require('./webapi/playlists')
+const playlistsSongs = require('./webapi/playlistsSongs')
+const playlistsActivities = require('./webapi/playlistsActivities')
+const collaborations = require('./webapi/collaborations')
 const PostgresServices = require('./services/persistence')
-const { albumValidator, songValidator } = require('./validator')
+const { jwtTokenManager } = require('./services/tokenize')
+
+const {
+  albumsValidator,
+  songsValidator,
+  usersValidator,
+  authenticationsValidator,
+  playlistsValidator,
+  playlistsSongsValidator,
+  collaborationsValidator
+} = require('./validator')
 
 require('dotenv').config()
 
@@ -22,17 +41,81 @@ const init = async () => {
 
   await server.register([
     {
+      plugin: Jwt
+    }
+  ])
+
+  server.auth.strategy('openmusic_jwt', 'jwt', {
+    keys: process.env.ACCESS_TOKEN_KEY,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      maxAgeSec: process.env.ACCESS_TOKEN_AGE
+    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id
+      }
+    })
+  })
+
+  await server.register([
+    {
       plugin: songs,
       options: {
-        service: services.songs,
-        validator: songValidator
+        ...services,
+        validator: songsValidator
       }
     },
     {
       plugin: albums,
       options: {
-        service: services.albums,
-        validator: albumValidator
+        ...services,
+        validator: albumsValidator
+      }
+    },
+    {
+      plugin: users,
+      options: {
+        ...services,
+        validator: usersValidator
+      }
+    },
+    {
+      plugin: authentications,
+      options: {
+        ...services,
+        tokenManager: jwtTokenManager,
+        validator: authenticationsValidator
+      }
+    },
+    {
+      plugin: playlists,
+      options: {
+        ...services,
+        validator: playlistsValidator
+      }
+    },
+    {
+      plugin: playlistsSongs,
+      options: {
+        ...services,
+        validator: playlistsSongsValidator
+      }
+    },
+    {
+      plugin: playlistsActivities,
+      options: {
+        ...services
+      }
+    },
+    {
+      plugin: collaborations,
+      options: {
+        ...services,
+        validator: collaborationsValidator
       }
     }
   ])

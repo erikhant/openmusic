@@ -1,6 +1,6 @@
-class AlbumHandler {
+class AlbumsHandler {
   constructor (service, validator) {
-    this._context = service
+    this._albumsService = service
     this._validator = validator
 
     this.postAlbum = this.postAlbum.bind(this)
@@ -10,9 +10,8 @@ class AlbumHandler {
   }
 
   async postAlbum (request, h) {
-    this._validator.validate(request.payload)
-
-    const albumId = await this._context.add(request.payload)
+    this._validator.validatePayload(request.payload)
+    const albumId = await this._albumsService.add(request.payload)
 
     const response = h.response({
       status: 'success',
@@ -25,7 +24,7 @@ class AlbumHandler {
 
   async getAlbumById (request, h) {
     const { id } = request.params
-    const album = await this._context.getById(id)
+    const album = await this._albumsService.getById(id)
 
     return {
       status: 'success',
@@ -36,26 +35,26 @@ class AlbumHandler {
   }
 
   async putAlbumById (request, h) {
-    this._validator.validate(request.payload)
+    this._validator.validatePayload(request.payload)
 
     const { id } = request.params
-    await this._context.update(id, request.payload)
+    await this._albumsService.update(id, request.payload)
 
     return {
       status: 'success',
-      message: `album with id [${id}] has been updated successfully`
+      message: `Successfully updated album [${id}]`
     }
   }
 
   async deleteAlbumById (request, h) {
     const { id } = request.params
-    await this._context.delete(id)
+    await this._albumsService.delete(id)
 
     return {
       status: 'success',
-      message: `album with id [${id}] has been deleted`
+      message: `Successfully deleted album [${id}]`
     }
   }
 }
 
-module.exports = AlbumHandler
+module.exports = AlbumsHandler

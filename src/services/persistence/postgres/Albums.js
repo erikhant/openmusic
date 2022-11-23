@@ -12,14 +12,16 @@ class Albums {
   async add ({ name, year }) {
     const id = `${this.#name}-${nanoid(16)}`
 
+    console.log('ADD albums')
+
     const query = {
       text: `INSERT INTO ${this.#name} VALUES($1, $2, $3) RETURNING id`,
       values: [id, name, year]
     }
     const result = await this._pool.query(query)
 
-    if (!result.rows[0].id) {
-      return new InvariantError(`Failed to add new ${this.#name}`)
+    if (!result.rowCount) {
+      return new InvariantError('An error occurred while saving data')
     }
 
     return result.rows[0].id
